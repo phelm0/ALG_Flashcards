@@ -78,11 +78,12 @@
     }
 
     function playAudio(url) {
-      const audio1 = new Audio(url);
+      const correctedUrl = url.startsWith('http') ? url : `https://storage.googleapis.com/port-flashcards-audio/${url}`;
+      const audio1 = new Audio(correctedUrl);
       audio1.play().catch(e => console.warn("Audio play failed:", e));
 
       setTimeout(() => {
-        const audio2 = new Audio(url);
+        const audio2 = new Audio(correctedUrl);
         audio2.play().catch(e => console.warn("Audio replay failed:", e));
       }, delayBetweenPlays);
     }
