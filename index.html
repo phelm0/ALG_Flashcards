@@ -53,42 +53,41 @@
       nextCard();
     }
 
-    function nextCard() {
-      const word = keys[Math.floor(Math.random() * keys.length)];
-      const entry = data[word];
+  function nextCard() {
+  const word = keys[Math.floor(Math.random() * keys.length)];
+  const entry = data[word];
 
-      const availableImages = entry.images.filter(img => !flaggedImages.has(img));
-      const availableAudioEntries = Object.entries(entry.audio).filter(([_, id]) => !flaggedAudio.has(id));
+  const availableImages = entry.images.filter(img => !flaggedImages.has(img));
+  const availableAudioEntries = Object.entries(entry.audio).filter(([_, id]) => !flaggedAudio.has(id));
 
-      if (availableImages.length === 0 || availableAudioEntries.length === 0) {
-        setTimeout(nextCard, 100);
-        return;
-      }
+  if (availableImages.length === 0 || availableAudioEntries.length === 0) {
+    setTimeout(nextCard, 100);
+    return;
+  }
 
-      const imageUrl = availableImages[Math.floor(Math.random() * availableImages.length)];
-      const [voice, audioUrl] = availableAudioEntries[Math.floor(Math.random() * availableAudioEntries.length)];
+  const imageUrl = availableImages[Math.floor(Math.random() * availableImages.length)];
+  const [voice, audioUrl] = availableAudioEntries[Math.floor(Math.random() * availableAudioEntries.length)];
 
-      currentImageUrl = imageUrl;
-      currentAudioUrl = audioUrl;
+  currentImageUrl = imageUrl;
+  currentAudioUrl = audioUrl;
 
-      document.getElementById("image").src = imageUrl;
-      document.getElementById("word").textContent = "";
+  console.log("Word:", word);
+  console.log("Image picked:", imageUrl);
+  console.log("Audio picked:", audioUrl);
 
-      console.log("Word:", word);
-      console.log("Image picked:", imageUrl);
-      console.log("Audio picked:", audioUrl);
+  document.getElementById("image").src = imageUrl;
+  document.getElementById("word").textContent = "";
 
-      const audio = new Audio(audioUrl);
-      audio.play().catch(() => {});
+  const audio = new Audio(audioUrl);
+  audio.play().catch(() => {});
 
-      setTimeout(() => {
-        const audio2 = new Audio(audioUrl);
-        audio2.play().catch(() => {});
-      }, delayBetweenPlays);
+  setTimeout(() => {
+    const audio2 = new Audio(audioUrl);
+    audio2.play().catch(() => {});
+  }, delayBetweenPlays);
 
-      setTimeout(nextCard, delayBetweenCards);
-    }
-
+  setTimeout(nextCard, delayBetweenCards);
+}
     function flagCurrentImage() {
       if (currentImageUrl) {
         flaggedImages.add(currentImageUrl);
