@@ -104,10 +104,10 @@
     }
 
     function startPlayer() {
-      document.getElementById("startScreen").style.display = "none";
-      document.getElementById("playerUI").style.display = "block";
-      fetchData();
-    }
+  document.getElementById("startScreen").style.display = "none";
+  document.getElementById("playerUI").style.display = "block";
+  setTimeout(fetchData, 100); // Give DOM time to render before fetching
+}
   </script>
 </body>
 </html>
