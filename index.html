@@ -13,27 +13,23 @@
 </head>
 <body>
   <h1>Portuguese Flashcard Warm-Up</h1>
+
+  <!-- START BUTTON -->
   <div id="startScreen">
-  <button onclick="startPlayer()">▶ Start Flashcards</button>
-</div>
-  <div id="card">
-    <img id="image" src="" alt="Flashcard Image" />
-    <div id="word"></div>
+    <button onclick="startPlayer()">▶ Start Flashcards</button>
   </div>
-  <div id="controls">
-    <button onclick="flagCurrentImage()">🚫 Flag Image</button>
-    <button onclick="flagCurrentAudio()">🚫 Flag Audio</button>
-  </div>
+
+  <!-- FLASHCARD UI (initially hidden) -->
   <div id="playerUI" style="display:none;">
-  <div id="card">
-    <img id="image" src="" alt="Flashcard Image" />
-    <div id="word"></div>
+    <div id="card">
+      <img id="image" src="" alt="Flashcard Image" />
+      <div id="word"></div>
+    </div>
+    <div id="controls">
+      <button onclick="flagCurrentImage()">🚫 Flag Image</button>
+      <button onclick="flagCurrentAudio()">🚫 Flag Audio</button>
+    </div>
   </div>
-  <div id="controls">
-    <button onclick="flagCurrentImage()">🚫 Flag Image</button>
-    <button onclick="flagCurrentAudio()">🚫 Flag Audio</button>
-  </div>
-</div>
 
   <script>
     const JSON_URL = "portuguese_flashcard_map.json";
@@ -63,12 +59,11 @@
       const word = keys[Math.floor(Math.random() * keys.length)];
       const entry = data[word];
 
-      // Filter out flagged images/audio
       const availableImages = entry.images.filter(img => !flaggedImages.has(img));
       const availableAudioEntries = Object.entries(entry.audio).filter(([_, id]) => !flaggedAudio.has(id));
 
       if (availableImages.length === 0 || availableAudioEntries.length === 0) {
-        setTimeout(showNextCard, 100); // Skip and try again
+        setTimeout(showNextCard, 100);
         return;
       }
 
@@ -79,7 +74,7 @@
       currentAudioUrl = audioId;
 
       document.getElementById("image").src = imageId;
-      document.getElementById("word").textContent = ""; // optional
+      document.getElementById("word").textContent = "";
 
       const audio = new Audio(audioId);
       audio.play();
@@ -109,10 +104,10 @@
     }
 
     function startPlayer() {
-  document.getElementById("startScreen").style.display = "none";
-  document.getElementById("playerUI").style.display = "block";
-  fetchData();
-}
+      document.getElementById("startScreen").style.display = "none";
+      document.getElementById("playerUI").style.display = "block";
+      fetchData();
+    }
   </script>
 </body>
 </html>
