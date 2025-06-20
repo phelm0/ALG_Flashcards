@@ -19,14 +19,21 @@
     <button onclick="startPlayer()">▶ Start Flashcards</button>
   </div>
 
-  <!-- FLASHCARD UI -->
+  <!-- FLASHCARD UI (this is the only version now) -->
   <div id="playerUI" style="display:none;">
+    <div id="card">
+      <img id="image" src="" alt="Flashcard Image" />
+      <div id="word"></div>
+    </div>
+    <div id="controls">
+      <button onclick="flagCurrentImage()">🚫 Flag Image</button>
+      <button onclick="flagCurrentAudio()">🚫 Flag Audio</button>
+    </div>
   </div>
 
   <script>
     const JSON_URL = "portuguese_flashcard_map.json";
     const bucketBaseUrl = "https://storage.googleapis.com/port-flashcards-audio/";
-    const voices = ["clara", "papi", "tiago"];
     const delayBetweenPlays = 1000;
     const delayBetweenCards = 4000;
 
@@ -61,7 +68,7 @@
       }
 
       const imageId = availableImages[Math.floor(Math.random() * availableImages.length)];
-      const [voice, audioId] = availableAudioEntries[Math.floor(Math.random() * availableAudioEntries.length)];
+      const [_, audioId] = availableAudioEntries[Math.floor(Math.random() * availableAudioEntries.length)];
 
       currentImageUrl = imageId;
       currentAudioUrl = audioId;
