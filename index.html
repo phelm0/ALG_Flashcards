@@ -13,6 +13,9 @@
 </head>
 <body>
   <h1>Portuguese Flashcard Warm-Up</h1>
+  <div id="startScreen">
+  <button onclick="startPlayer()">▶ Start Flashcards</button>
+</div>
   <div id="card">
     <img id="image" src="" alt="Flashcard Image" />
     <div id="word"></div>
@@ -21,6 +24,16 @@
     <button onclick="flagCurrentImage()">🚫 Flag Image</button>
     <button onclick="flagCurrentAudio()">🚫 Flag Audio</button>
   </div>
+  <div id="playerUI" style="display:none;">
+  <div id="card">
+    <img id="image" src="" alt="Flashcard Image" />
+    <div id="word"></div>
+  </div>
+  <div id="controls">
+    <button onclick="flagCurrentImage()">🚫 Flag Image</button>
+    <button onclick="flagCurrentAudio()">🚫 Flag Audio</button>
+  </div>
+</div>
 
   <script>
     const JSON_URL = "portuguese_flashcard_map.json";
@@ -95,7 +108,11 @@
       }
     }
 
-    fetchData();
+    function startPlayer() {
+  document.getElementById("startScreen").style.display = "none";
+  document.getElementById("playerUI").style.display = "block";
+  fetchData();
+}
   </script>
 </body>
 </html>
