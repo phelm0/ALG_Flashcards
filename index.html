@@ -48,38 +48,42 @@
     }
 
     function nextCard() {
-      if (!keys.length) return;
+  if (!keys.length) return;
 
-      let entry, word;
-      do {
-        word = keys[Math.floor(Math.random() * keys.length)];
-        entry = data[word];
-      } while (
-        !entry || 
-        !entry.images.some(img => !flaggedImages.has(img)) || 
-        !Object.values(entry.audio).some(aud => !flaggedAudio.has(aud))
-      );
+  let entry, word;
+  do {
+    word = keys[Math.floor(Math.random() * keys.length)];
+    entry = data[word];
+  } while (
+    !entry || 
+    !entry.images.some(img => !flaggedImages.has(img)) || 
+    !Object.values(entry.audio).some(aud => !flaggedAudio.has(aud))
+  );
 
-      const image = entry.images.find(img => !flaggedImages.has(img));
-      const audio = Object.values(entry.audio).find(aud => !flaggedAudio.has(aud));
+  const image = entry.images.find(img => !flaggedImages.has(img));
+  const audio = Object.values(entry.audio).find(aud => !flaggedAudio.has(aud));
 
-      if (!image || !audio) return nextCard(); // Skip if none available
+  console.log("Word:", word);
+  console.log("Image picked:", image);
+  console.log("Audio picked:", audio);
 
-      currentImage = image;
-      currentAudio = audio;
+  if (!image || !audio) return nextCard();
 
-      document.getElementById("image").src = bucket + image;
+  currentImage = image;
+  currentAudio = audio;
 
-      const audioEl = new Audio(bucket + audio);
-      audioEl.play().catch(() => {});
-      setTimeout(() => {
-        const repeat = new Audio(bucket + audio);
-        repeat.play().catch(() => {});
-      }, 1000);
+  document.getElementById("image").src = bucket + image;
+  console.log("Image URL:", bucket + image);
 
-      setTimeout(nextCard, delay);
-    }
+  const audioEl = new Audio(bucket + audio);
+  audioEl.play().catch(() => {});
+  setTimeout(() => {
+    const repeat = new Audio(bucket + audio);
+    repeat.play().catch(() => {});
+  }, 1000);
 
+  setTimeout(nextCard, delay);
+}
     function flagImage() {
       if (currentImage) {
         flaggedImages.add(currentImage);
