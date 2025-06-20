@@ -14,12 +14,10 @@
 <body>
   <h1>Portuguese Flashcard Warm-Up</h1>
 
-  <!-- START BUTTON -->
   <div id="startScreen">
     <button onclick="startPlayer()">▶ Start Flashcards</button>
   </div>
 
-  <!-- FLASHCARD UI -->
   <div id="playerUI" style="display:none;">
     <div id="card">
       <img id="image" src="" alt="Flashcard Image" />
@@ -33,8 +31,6 @@
 
   <script>
     const JSON_URL = "portuguese_flashcard_map.json";
-    const bucketBaseUrl = "https://storage.googleapis.com/port-flashcards-audio/";
-    const voices = ["clara", "papi", "tiago"];
     const delayBetweenPlays = 1000;
     const delayBetweenCards = 4000;
 
@@ -61,21 +57,18 @@
       const entry = data[word];
 
       const availableImages = entry.images.filter(img => !flaggedImages.has(img));
-      const availableAudioEntries = Object.entries(entry.audio).filter(([_, id]) => !flaggedAudio.has(id));
+      const availableAudio = Object.entries(entry.audio).filter(([_, id]) => !flaggedAudio.has(id));
 
-      if (availableImages.length === 0 || availableAudioEntries.length === 0) {
+      if (availableImages.length === 0 || availableAudio.length === 0) {
         setTimeout(nextCard, 100);
         return;
       }
 
-      const imageId = availableImages[Math.floor(Math.random() * availableImages.length)];
-      const [voice, audioId] = availableAudioEntries[Math.floor(Math.random() * availableAudioEntries.length)];
+      const imageUrl = availableImages[Math.floor(Math.random() * availableImages.length)];
+      const [voice, audioUrl] = availableAudio[Math.floor(Math.random() * availableAudio.length)];
 
-      currentImageUrl = imageId;
-      currentAudioUrl = audioId;
-
-      const imageUrl = bucketBaseUrl + imageId;
-      const audioUrl = bucketBaseUrl + audioId;
+      currentImageUrl = imageUrl;
+      currentAudioUrl = audioUrl;
 
       console.log("Word:", word);
       console.log("Image picked:", imageUrl);
@@ -85,11 +78,12 @@
       document.getElementById("word").textContent = "";
 
       const audio = new Audio(audioUrl);
-      audio.addEventListener("ended", () => {
+      audio.play().catch(err => console.warn("First play failed:", err));
+
+      setTimeout(() => {
         const audio2 = new Audio(audioUrl);
         audio2.play().catch(err => console.warn("Second play failed:", err));
-      });
-      audio.play().catch(err => console.warn("First play failed:", err));
+      }, delayBetweenPlays);
 
       setTimeout(nextCard, delayBetweenCards);
     }
