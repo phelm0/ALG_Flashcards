@@ -78,14 +78,15 @@
   document.getElementById("image").src = imageUrl;
   document.getElementById("word").textContent = "";
 
-  const audio = new Audio(audioUrl);
-  audio.play().catch(() => {});
+const audio = new Audio(bucketBaseUrl + audioId);
+audio.load();
+audio.play().catch(() => {});
 
-  setTimeout(() => {
-    const audio2 = new Audio(audioUrl);
-    audio2.play().catch(() => {});
-  }, delayBetweenPlays);
-
+setTimeout(() => {
+  const audio2 = new Audio(bucketBaseUrl + audioId);
+  audio2.load();
+  audio2.play().catch(() => {});
+}, delayBetweenPlays);
   setTimeout(nextCard, delayBetweenCards);
 }
     function flagCurrentImage() {
