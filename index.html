@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Portuguese Flashcards</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; padding: 2em; }
+    img { max-width: 80%; max-height: 60vh; border: 2px solid #ccc; margin: 20px auto; }
+    audio { display: none; }
+    #word { font-size: 1.5em; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <h1>Portuguese Flashcard Warm-Up</h1>
+  <div id="card">
+    <img id="image" src="" alt="Flashcard Image" />
+    <div id="word"></div>
+  </div>
+
+  <script>
+    const JSON_FILE_ID = "1Wj6Xt5c8niNbWv4yQe4CWKkLKV56WoD6";
+    const GOOGLE_URL = id => `https://drive.google.com/uc?export=download&id=${id}`;
+    const voices = ["clara", "papi", "tiago"];
+    const delayBetweenPlays = 1000;
+    const delayBetweenCards = 4000;
+
+    let data = {};
+    let keys = [];
+
+    async function fetchData() {
+      const res = await fetch(GOOGLE_URL(JSON_FILE_ID));
+      data = await res.json();
+      keys = Object.keys(data).filter(k => data[k].images.length > 0 && Object.keys(data[k].audio).length > 0);
+      showNextCard();
+    }
+
+    function showNextCard() {
+      const word = keys[Math.floor(Math.random() * keys.length)];
+      const entry = data[word];
+
+      const imageId = entry.images[Math.floor(Math.random() * entry.images.length)];
+      const voice = voices.find(v => entry.audio[v]) || Object.keys(entry.audio)[0];
+      const audioId = entry.audio[voice];
+
+      const imageUrl = GOOGLE_URL(imageId);
+      const audioUrl = GOOGLE_URL(audioId);
+
+      document.getElementById("image").src = imageUrl;
+      document.getElementById("word").textContent = ""; // optional: hide word if desired
+
+      const audio = new Audio(audioUrl);
+      audio.play();
+
+      setTimeout(() => {
+        const audio2 = new Audio(audioUrl);
+        audio2.play();
+      }, delayBetweenPlays);
+
+      setTimeout(showNextCard, delayBetweenCards);
+    }
+
+    fetchData();
+  </script>
+</body>
+</html>
