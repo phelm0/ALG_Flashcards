@@ -37,6 +37,9 @@
     let currentImageUrl = null;
     let currentAudioUrl = null;
 
+    let audioContext;
+    const audioBufferCache = {};
+
     const flaggedImages = new Set(JSON.parse(localStorage.getItem("flaggedImages") || "[]"));
     const flaggedAudio = new Set(JSON.parse(localStorage.getItem("flaggedAudio") || "[]"));
 
@@ -77,14 +80,34 @@
       setTimeout(nextCard, delayBetweenCards);
     }
 
-    function playAudio(url) {
-      const audio1 = new Audio(url);
-      audio1.play().catch(e => console.warn("Audio play failed:", e));
+    async function playAudio(url) {
+      if (!url || !audioContext) return;
 
-      setTimeout(() => {
-        const audio2 = new Audio(url);
-        audio2.play().catch(e => console.warn("Audio replay failed:", e));
-      }, delayBetweenPlays);
+      if (audioContext.state === "suspended") {
+        audioContext.resume();
+      }
+
+      try {
+        let buffer = audioBufferCache[url];
+        if (!buffer) {
+          const response = await fetch(url);
+          const arrayBuffer = await response.arrayBuffer();
+          buffer = await audioContext.decodeAudioData(arrayBuffer);
+          audioBufferCache[url] = buffer;
+        }
+
+        const play = () => {
+          const source = audioContext.createBufferSource();
+          source.buffer = buffer;
+          source.connect(audioContext.destination);
+          source.start();
+        };
+
+        play();
+        setTimeout(play, delayBetweenPlays);
+      } catch (e) {
+        console.warn(`Could not play audio for ${url}`, e);
+      }
     }
 
     function flagCurrentImage() {
@@ -104,6 +127,7 @@
     }
 
     function startPlayer() {
+      audioContext = new (window.AudioContext || window.webkitAudioContext)();
       document.getElementById("startScreen").style.display = "none";
       document.getElementById("playerUI").style.display = "block";
       fetchData();
