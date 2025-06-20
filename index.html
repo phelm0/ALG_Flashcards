@@ -14,10 +14,12 @@
 <body>
   <h1>Portuguese Flashcard Warm-Up</h1>
 
+  <!-- START BUTTON -->
   <div id="startScreen">
     <button onclick="startPlayer()">▶ Start Flashcards</button>
   </div>
 
+  <!-- FLASHCARD UI -->
   <div id="playerUI" style="display:none;">
     <div id="card">
       <img id="image" src="" alt="Flashcard Image" />
@@ -31,6 +33,7 @@
 
   <script>
     const JSON_URL = "portuguese_flashcard_map.json";
+    const bucketBaseUrl = "https://storage.googleapis.com/port-flashcards-audio/";
     const voices = ["clara", "papi", "tiago"];
     const delayBetweenPlays = 1000;
     const delayBetweenCards = 4000;
@@ -53,42 +56,44 @@
       nextCard();
     }
 
-  function nextCard() {
-  const word = keys[Math.floor(Math.random() * keys.length)];
-  const entry = data[word];
+    function nextCard() {
+      const word = keys[Math.floor(Math.random() * keys.length)];
+      const entry = data[word];
 
-  const availableImages = entry.images.filter(img => !flaggedImages.has(img));
-  const availableAudioEntries = Object.entries(entry.audio).filter(([_, id]) => !flaggedAudio.has(id));
+      const availableImages = entry.images.filter(img => !flaggedImages.has(img));
+      const availableAudioEntries = Object.entries(entry.audio).filter(([_, id]) => !flaggedAudio.has(id));
 
-  if (availableImages.length === 0 || availableAudioEntries.length === 0) {
-    setTimeout(nextCard, 100);
-    return;
-  }
+      if (availableImages.length === 0 || availableAudioEntries.length === 0) {
+        setTimeout(nextCard, 100);
+        return;
+      }
 
-  const imageUrl = availableImages[Math.floor(Math.random() * availableImages.length)];
-  const [voice, audioUrl] = availableAudioEntries[Math.floor(Math.random() * availableAudioEntries.length)];
+      const imageId = availableImages[Math.floor(Math.random() * availableImages.length)];
+      const [voice, audioId] = availableAudioEntries[Math.floor(Math.random() * availableAudioEntries.length)];
 
-  currentImageUrl = imageUrl;
-  currentAudioUrl = audioUrl;
+      currentImageUrl = imageId;
+      currentAudioUrl = audioId;
 
-  console.log("Word:", word);
-  console.log("Image picked:", imageUrl);
-  console.log("Audio picked:", audioUrl);
+      const imageUrl = bucketBaseUrl + imageId;
+      const audioUrl = bucketBaseUrl + audioId;
 
-  document.getElementById("image").src = imageUrl;
-  document.getElementById("word").textContent = "";
+      console.log("Word:", word);
+      console.log("Image picked:", imageUrl);
+      console.log("Audio picked:", audioUrl);
 
-const audio = new Audio(bucketBaseUrl + audioId);
-audio.load();
-audio.play().catch(() => {});
+      document.getElementById("image").src = imageUrl;
+      document.getElementById("word").textContent = "";
 
-setTimeout(() => {
-  const audio2 = new Audio(bucketBaseUrl + audioId);
-  audio2.load();
-  audio2.play().catch(() => {});
-}, delayBetweenPlays);
-  setTimeout(nextCard, delayBetweenCards);
-}
+      const audio = new Audio(audioUrl);
+      audio.addEventListener("ended", () => {
+        const audio2 = new Audio(audioUrl);
+        audio2.play().catch(err => console.warn("Second play failed:", err));
+      });
+      audio.play().catch(err => console.warn("First play failed:", err));
+
+      setTimeout(nextCard, delayBetweenCards);
+    }
+
     function flagCurrentImage() {
       if (currentImageUrl) {
         flaggedImages.add(currentImageUrl);
